@@ -319,6 +319,45 @@ nav a:hover {
   height: auto;
   object-fit: contain;
 }
+.showcase-video-toggle {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(201, 165, 90, 0.44);
+  background: rgba(6, 7, 10, 0.72);
+  backdrop-filter: blur(10px) saturate(1.18);
+  color: var(--gold-light);
+  border-radius: 999px;
+  padding: 0.58rem 0.9rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: "Sora", sans-serif;
+  cursor: pointer;
+  transition:
+    transform 0.22s,
+    background 0.22s,
+    border-color 0.22s,
+    color 0.22s;
+}
+.showcase-video-toggle:hover {
+  transform: translateY(-1px);
+  border-color: var(--gold-light);
+  background: rgba(6, 7, 10, 0.88);
+}
+.showcase-video-toggle.is-live {
+  background: rgba(201, 165, 90, 0.92);
+  border-color: var(--gold-light);
+  color: #050608;
+}
+.showcase-video-toggle-icon {
+  font-size: 0.82rem;
+  line-height: 1;
+}
 
 /* ─── STATS BAR ──────────────────────────────── */
 .stats-bar {
@@ -799,6 +838,12 @@ nav a:hover {
   }
   .showcase-video-frame {
     border-radius: 1.2rem;
+  }
+  .showcase-video-toggle {
+    right: 0.7rem;
+    bottom: 0.7rem;
+    font-size: 0.62rem;
+    padding: 0.5rem 0.74rem;
   }
   .stats-inner {
     grid-template-columns: repeat(2, 1fr);

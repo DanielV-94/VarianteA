@@ -54,10 +54,15 @@
 
     <section class="showcase-video container reveal" aria-label="Video de propiedades premium">
       <div class="showcase-video-frame">
-        <video class="showcase-video-media" controls loop playsinline preload="metadata">
+        <video class="showcase-video-media" autoplay muted loop playsinline preload="metadata">
           <source src="./assets/video.mp4" type="video/mp4" />
           Tu navegador no soporta video HTML5.
         </video>
+        <button class="showcase-video-toggle" id="showcaseVideoToggle" type="button" aria-pressed="false"
+          aria-label="Activar sonido del video">
+          <span class="showcase-video-toggle-icon" aria-hidden="true">🔊</span>
+          <span class="showcase-video-toggle-text" data-video-label>Activar sonido</span>
+        </button>
       </div>
     </section>
 

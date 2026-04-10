@@ -219,10 +219,90 @@ gsap.fromTo(
    ═══════════════════════════════════════════════════ */
 function initPage() {
   heroEntrance();
+  initShowcaseVideo();
   initStats();
   initPanels();
   initCards();
   initRevealGeneric();
+}
+
+/* ─── Showcase video: sound + play state ───────── */
+function initShowcaseVideo() {
+  const video = document.querySelector(".showcase-video-media");
+  const toggleBtn = document.getElementById("showcaseVideoToggle");
+  const label = toggleBtn?.querySelector("[data-video-label]");
+  const icon = toggleBtn?.querySelector(".showcase-video-toggle-icon");
+
+  if (!video || !toggleBtn || !label || !icon) return;
+
+  const setUiState = () => {
+    const isPlaying = !video.paused && !video.ended;
+    const isMuted = video.muted || video.volume === 0;
+
+    if (!isPlaying) {
+      label.textContent = "Reproducir con sonido";
+      icon.textContent = "▶";
+      toggleBtn.classList.remove("is-live");
+      toggleBtn.setAttribute("aria-pressed", "false");
+      toggleBtn.setAttribute("aria-label", "Reproducir video con sonido");
+      return;
+    }
+
+    if (isMuted) {
+      label.textContent = "Activar sonido";
+      icon.textContent = "🔊";
+      toggleBtn.classList.remove("is-live");
+      toggleBtn.setAttribute("aria-pressed", "false");
+      toggleBtn.setAttribute("aria-label", "Activar sonido del video");
+      return;
+    }
+
+    label.textContent = "Silenciar video";
+    icon.textContent = "🔇";
+    toggleBtn.classList.add("is-live");
+    toggleBtn.setAttribute("aria-pressed", "true");
+    toggleBtn.setAttribute("aria-label", "Silenciar audio del video");
+  };
+
+  const playMutedFallback = async () => {
+    try {
+      await video.play();
+    } catch {
+      // El autoplay puede bloquearse por el navegador; se resolverá con clic del usuario.
+    }
+    setUiState();
+  };
+
+  toggleBtn.addEventListener("click", async () => {
+    const isPlaying = !video.paused && !video.ended;
+
+    if (!isPlaying) {
+      video.muted = false;
+      video.volume = 1;
+      try {
+        await video.play();
+      } catch {
+        // Si falla, mantenemos UI consistente.
+      }
+      setUiState();
+      return;
+    }
+
+    if (video.muted || video.volume === 0) {
+      video.muted = false;
+      video.volume = 1;
+    } else {
+      video.muted = true;
+    }
+
+    setUiState();
+  });
+
+  video.addEventListener("play", setUiState);
+  video.addEventListener("pause", setUiState);
+  video.addEventListener("volumechange", setUiState);
+
+  playMutedFallback();
 }
 
 /* ─── Hero entrance ──────────────────────────────── */
