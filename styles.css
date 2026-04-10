@@ -30,6 +30,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  font-size: clamp(16px, 0.24vw + 15.4px, 18px);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -205,8 +209,8 @@ nav a:hover {
 }
 .hero-overlay {
   background:
-    linear-gradient(to right, rgba(6, 7, 10, 0.72) 40%, transparent 100%),
-    linear-gradient(to top, rgba(6, 7, 10, 0.95) 0%, transparent 55%);
+    linear-gradient(to right, rgba(6, 7, 10, 0.52) 40%, transparent 100%),
+    linear-gradient(to top, rgba(6, 7, 10, 0.76) 0%, transparent 55%);
 }
 /* Noise grain overlay */
 .hero::after {
