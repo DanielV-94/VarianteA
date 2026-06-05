@@ -1,6 +1,6 @@
 /**
- * LAA Real Estate — Black Label
- * Awwwards-level scroll experience
+ * CINTORA — Arquitectura
+ * Awwwards-level architectural portfolio
  * —————————————————————————————
  * · Custom magnetic cursor
  * · SplitText char-by-char hero title
@@ -35,20 +35,66 @@ if (typeof Lenis !== "undefined" && !prefersReduced) {
   requestAnimationFrame(raf);
 }
 
-/* ── Loader ───────────────────────────────────────── */
+/* ── Loader (SVG draw animation) ──────────────── */
 const loader = document.getElementById("loader");
-const loaderPx = document.getElementById("loaderProgress");
-const loaderTl = gsap.timeline();
+const loaderLogo = document.getElementById("loaderLogo");
+const pathDer = loader?.querySelector("#der");
+const pathIzq = loader?.querySelector("#izq");
+const loaderBrand = loader?.querySelector(".loader-brand");
 
-loaderTl
-  .to(loaderPx, { width: "100%", duration: 1.3, ease: "power2.inOut" })
-  .to(loader, {
-    autoAlpha: 0,
-    duration: 0.55,
-    ease: "power2.in",
-    onComplete: () => loader?.classList.add("is-hidden"),
-    onStart: initPage,
-  });
+if (loader && pathDer && pathIzq) {
+  // Lock scroll during loader
+  document.body.style.overflow = "hidden";
+
+  const lenDer = pathDer.getTotalLength();
+  const lenIzq = pathIzq.getTotalLength();
+
+  // Set initial state — paths invisible
+  gsap.set(pathDer, { strokeDasharray: lenDer, strokeDashoffset: lenDer });
+  gsap.set(pathIzq, { strokeDasharray: lenIzq, strokeDashoffset: lenIzq });
+
+  const loaderTl = gsap.timeline();
+
+  if (prefersReduced) {
+    // Reduced motion: show static logo, then fade
+    gsap.set([pathDer, pathIzq], { strokeDashoffset: 0 });
+    gsap.set(loaderBrand, { opacity: 1 });
+    loaderTl.to(loader, {
+      autoAlpha: 0,
+      duration: 0.3,
+      delay: 0.3,
+      ease: "power2.in",
+      onComplete: () => {
+        loader.classList.add("is-hidden");
+        document.body.style.overflow = "";
+      },
+      onStart: initPage,
+    });
+  } else {
+    // Full draw animation
+    loaderTl
+      .to([pathDer, pathIzq], {
+        strokeDashoffset: 0,
+        duration: 1.5,
+        ease: "power2.inOut",
+      })
+      .to(loaderBrand, {
+        opacity: 1,
+        duration: 0.4,
+        ease: "power2.out",
+      }, "-=0.3")
+      .to(loader, {
+        autoAlpha: 0,
+        duration: 0.4,
+        ease: "power2.in",
+        onComplete: () => {
+          loader.classList.add("is-hidden");
+          document.body.style.overflow = "";
+        },
+        onStart: initPage,
+      }, "+=0.3");
+  }
+}
 
 /* ── Nav scroll class ─────────────────────────────── */
 const nav = document.querySelector(".nav");
@@ -152,7 +198,7 @@ if (canvas && !prefersReduced) {
   const isMob = innerWidth < 768;
   const primary = createField({
     count: isMob ? 1600 : 3200,
-    color: "#c9a55a",
+    color: "#ff7e00",
     size: 0.18,
     opacity: 0.65,
     sx: 88,
@@ -161,7 +207,7 @@ if (canvas && !prefersReduced) {
   });
   const secondary = createField({
     count: isMob ? 600 : 1100,
-    color: "#f6f2e4",
+    color: "#f5f2ee",
     size: 0.1,
     opacity: 0.38,
     sx: 70,
@@ -196,23 +242,104 @@ if (canvas && !prefersReduced) {
 }
 
 /* ═══════════════════════════════════════════════════
-   HERO BG PARALLAX
+   HERO BG PARALLAX (responsive via matchMedia)
    ═══════════════════════════════════════════════════ */
-gsap.fromTo(
-  ".hero-bg",
-  { scale: 1.1, yPercent: 0 },
-  {
-    yPercent: 18,
-    scale: 1.0,
-    ease: "none",
-    scrollTrigger: {
-      trigger: ".hero",
-      start: "top top",
-      end: "bottom top",
-      scrub: true,
+const mm = gsap.matchMedia();
+
+// Desktop — full parallax
+mm.add("(min-width: 1025px)", () => {
+  gsap.fromTo(
+    ".hero-bg",
+    { scale: 1.1, yPercent: 0 },
+    {
+      yPercent: 18,
+      scale: 1.0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
     },
-  },
-);
+  );
+});
+
+// Tablet landscape — slightly reduced parallax
+mm.add("(max-width: 1024px) and (orientation: landscape)", () => {
+  gsap.fromTo(
+    ".hero-bg",
+    { scale: 1.08, yPercent: 0 },
+    {
+      yPercent: 12,
+      scale: 1.0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    },
+  );
+});
+
+// Tablet portrait — reduced parallax
+mm.add("(max-width: 1024px) and (orientation: portrait)", () => {
+  gsap.fromTo(
+    ".hero-bg",
+    { scale: 1.06, yPercent: 0 },
+    {
+      yPercent: 10,
+      scale: 1.0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    },
+  );
+});
+
+// Mobile portrait — minimal parallax for performance
+mm.add("(max-width: 599px)", () => {
+  gsap.fromTo(
+    ".hero-bg",
+    { scale: 1.04, yPercent: 0 },
+    {
+      yPercent: 6,
+      scale: 1.0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    },
+  );
+});
+
+// Mobile landscape — reduced parallax
+mm.add("(max-width: 768px) and (orientation: landscape)", () => {
+  gsap.fromTo(
+    ".hero-bg",
+    { scale: 1.05, yPercent: 0 },
+    {
+      yPercent: 8,
+      scale: 1.0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    },
+  );
+});
 
 /* ═══════════════════════════════════════════════════
    PAGE INIT (called after loader completes)
@@ -395,7 +522,23 @@ function initStats() {
 
 /* ─── Scrollytelling panels ──────────────────────── */
 function initPanels() {
-  document.querySelectorAll(".scrolly-panel").forEach((panel, i) => {
+  // Determine responsive animation parameters
+  const isSmall = window.innerWidth <= 599;
+  const isMedium = window.innerWidth <= 1024;
+
+  // Adapted values: reduced distances/durations on smaller viewports
+  const panelCfg = {
+    clipDuration: isSmall ? 0.7 : 1.1,
+    scaleDuration: isSmall ? 0.9 : 1.4,
+    wordDuration: isSmall ? 0.55 : 0.75,
+    wordStagger: isSmall ? 0.04 : 0.07,
+    numYStart: isSmall ? "6%" : "12%",
+    numYEnd: isSmall ? "-6%" : "-12%",
+    imgYStart: isSmall ? -2 : (isMedium ? -3 : -4),
+    imgYEnd: isSmall ? 3 : (isMedium ? 4 : 6),
+  };
+
+  document.querySelectorAll(".scrolly-panel").forEach((panel) => {
     const imgWrap = panel.querySelector(".panel-img-wrap");
     const img = panel.querySelector(".panel-img-wrap img");
     const numEl = panel.querySelector(".panel-num");
@@ -460,7 +603,7 @@ function initPanels() {
         imgWrap,
         {
           clipPath: "inset(0 0% 0 0 round 1.6rem)",
-          duration: 1.1,
+          duration: panelCfg.clipDuration,
           ease: "power3.inOut",
         },
         0,
@@ -473,7 +616,7 @@ function initPanels() {
         img,
         {
           scale: 1,
-          duration: 1.4,
+          duration: panelCfg.scaleDuration,
           ease: "power2.out",
         },
         0,
@@ -487,9 +630,9 @@ function initPanels() {
         wordInners,
         {
           y: "0%",
-          duration: 0.75,
+          duration: panelCfg.wordDuration,
           ease: "power3.out",
-          stagger: 0.07,
+          stagger: panelCfg.wordStagger,
         },
         0.12,
       );
@@ -515,13 +658,13 @@ function initPanels() {
         0.45,
       );
 
-    /* ---- Panel number parallax (scrub) ---- */
+    /* ---- Panel number parallax (scrub) — reduced on mobile ---- */
     if (numEl) {
       gsap.fromTo(
         numEl,
-        { y: "12%", opacity: 0.06 },
+        { y: panelCfg.numYStart, opacity: 0.06 },
         {
-          y: "-12%",
+          y: panelCfg.numYEnd,
           opacity: 0.18,
           ease: "none",
           scrollTrigger: {
@@ -534,13 +677,13 @@ function initPanels() {
       );
     }
 
-    /* ---- Image subtle scrub parallax ---- */
+    /* ---- Image subtle scrub parallax — reduced on mobile ---- */
     if (img) {
       gsap.fromTo(
         img,
-        { yPercent: -4 },
+        { yPercent: panelCfg.imgYStart },
         {
-          yPercent: 6,
+          yPercent: panelCfg.imgYEnd,
           ease: "none",
           scrollTrigger: {
             trigger: panel,
@@ -583,10 +726,11 @@ function initCards() {
     });
   });
 
-  // Card entrance stagger
+  // Card entrance stagger — reduced distance on mobile
+  const cardY = window.innerWidth <= 599 ? 24 : 48;
   gsap.fromTo(
     ".card",
-    { y: 48, opacity: 0 },
+    { y: cardY, opacity: 0 },
     {
       y: 0,
       opacity: 1,
@@ -604,10 +748,14 @@ function initCards() {
 
 /* ─── Generic reveal (kickers, close card) ──────── */
 function initRevealGeneric() {
+  // Reduced reveal distance on mobile for performance
+  const revealY = window.innerWidth <= 599 ? 12 : 22;
+  const closeY = window.innerWidth <= 599 ? 20 : 40;
+
   gsap.utils.toArray(".reveal").forEach((el) => {
     gsap.fromTo(
       el,
-      { y: 22, opacity: 0 },
+      { y: revealY, opacity: 0 },
       {
         y: 0,
         opacity: 1,
@@ -625,7 +773,7 @@ function initRevealGeneric() {
   // Close card reveal
   gsap.fromTo(
     ".close-card",
-    { y: 40, opacity: 0 },
+    { y: closeY, opacity: 0 },
     {
       y: 0,
       opacity: 1,
